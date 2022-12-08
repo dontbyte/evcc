@@ -34,12 +34,17 @@ params:
   - name: capacity
   - name: phases
     advanced: true
+  - name: icon
+    default: car
+    advanced: true
   - preset: vehicleidentify
-  - preset: vehiclecloud
 render: |
   type: tesla
   {{- if ne .title "" }}
   title: {{ .title }}
+  {{- end }}
+  {{- if ne .icon "" }}
+  icon: {{ .icon }}
   {{- end }}
   tokens:
     access: {{ .accessToken }}
@@ -52,4 +57,3 @@ render: |
   vin: {{ .vin }}
   {{- end }}
   {{ include "vehicle-identify" . }}
-  {{ include "vehicle-cloud" . }}

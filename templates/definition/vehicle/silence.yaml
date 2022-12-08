@@ -11,8 +11,8 @@ params:
   - preset: vehiclebase
   - name: vin
     example: W...
-  - preset: vehiclecloud
+  - name: icon
+    default: scooter
 render: |
   type: silence
   {{ include "vehicle-base" . }}
-  {{ include "vehicle-cloud" . }}

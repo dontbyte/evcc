@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"strings"
-
 	"github.com/evcc-io/evcc/provider/javascript"
 	"github.com/evcc-io/evcc/util"
 	"github.com/robertkrimen/otto"
@@ -20,16 +18,19 @@ func init() {
 
 // NewJavascriptProviderFromConfig creates a HTTP provider
 func NewJavascriptProviderFromConfig(other map[string]interface{}) (IntProvider, error) {
-	cc := struct {
+	var cc struct {
 		VM     string
 		Script string
-	}{}
+	}
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
 	}
 
-	vm := javascript.RegisteredVM(strings.ToLower(cc.VM))
+	vm, err := javascript.RegisteredVM(cc.VM, "")
+	if err != nil {
+		return nil, err
+	}
 
 	p := &Javascript{
 		vm:     vm,

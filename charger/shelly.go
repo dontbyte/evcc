@@ -20,13 +20,13 @@ func init() {
 
 // NewShellyFromConfig creates a Shelly charger from generic config
 func NewShellyFromConfig(other map[string]interface{}) (api.Charger, error) {
-	cc := struct {
+	var cc struct {
 		URI          string
 		User         string
 		Password     string
 		Channel      int
 		StandbyPower float64
-	}{}
+	}
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
@@ -78,4 +78,11 @@ func (c *Shelly) Enable(enable bool) error {
 // MaxCurrent implements the api.Charger interface
 func (c *Shelly) MaxCurrent(current int64) error {
 	return nil
+}
+
+var _ api.MeterEnergy = (*Shelly)(nil)
+
+// TotalEnergy implements the api.MeterEnergy interface
+func (c *Shelly) TotalEnergy() (float64, error) {
+	return c.conn.TotalEnergy()
 }

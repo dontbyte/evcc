@@ -45,6 +45,14 @@ params:
       de: IP-Adresse oder Hostname
       en: IP-Address or Hostname
     example: 192.0.2.2
+  - name: ip
+    description:
+      de: IP-Adresse
+      en: IP-Address
+    help:
+      de: IP-Adresse
+      en: IP-Address
+    example: 192.0.2.2
   - name: port
     description:
       de: Port
@@ -112,9 +120,10 @@ params:
       de: Cache
       en: Cache
     help:
-      de: Zeitintervall, in dem Daten vom Fahrzeug neu geladen werden sollen
+      de: Zeitintervall nach dem Daten erneut vom Fahrzeug abgefragt werden
       en: Time interval with when data should be reloaded from the vehicle
     advanced: true
+    valuetype: duration
     example: 5m
   - name: cloud
     description:
@@ -216,6 +225,34 @@ params:
       en: "'en' for English and 'de' for German"
     default: en
     validvalues: ["de", "en"]
+  - name: icon
+    description:
+      de: Icon
+      en: Icon
+    help:
+      de: "Darstellung in der UI. Mögliche Werte: bike, bus, car, heater, heatercooler, heatpump, moped, motorcycle, plug, scooter, tractor, van, waterheater"
+      en: "Visible in UI. Possible values: bike, bus, car, heater, heatercooler, heatpump, moped, motorcycle, plug, scooter, tractor, van, waterheater"
+    validvalues:
+      [
+        "bike",
+        "bus",
+        "car",
+        "heater",
+        "heatercooler",
+        "heatpump",
+        "moped",
+        "motorcycle",
+        "plug",
+        "scooter",
+        "tractor",
+        "van",
+        "waterheater",
+      ]
+  - name: ski
+    required: true
+    help:
+      en: The SKI of the wallbox, can usually be found on the web interface of the wallbox
+      de: Die SKI der Wallbox, ist üblicherweise im Web Interface der Wallbox zu finden
 
 presets:
   vehiclebase:
@@ -229,13 +266,20 @@ presets:
       - name: capacity
       - name: phases
         advanced: true
-      - name: cache
+      - name: icon
+        default: car
         advanced: true
-        deprecated: true
+      - name: cache
+        default: 15m
+        advanced: true
+        valuetype: duration
     render: |
       {{define "vehicle-base"}}
       {{- if ne .title "" }}
       title: {{ .title }}
+      {{- end }}
+      {{- if ne .icon "" }}
+      icon: {{ .icon }}
       {{- end }}
       user: {{ .user }}
       password: {{ .password }}
@@ -301,14 +345,28 @@ presets:
       {{define "vehicle-language"}}
       language: {{ .language }}
       {{end}}
-
-  vehiclecloud:
+  eebusmeter:
     params:
-      - name: cloud
-        advanced: true
+      - name: ski
+      - name: ip
+        required: false
     render: |
-      {{define "vehicle-cloud"}}
-      cloud: {{ .cloud }}
+      {{define "eebus-meter"}}
+      type: eebus
+      ski: {{ .ski }}
+      {{ if ne .ip "" }}ip: {{ .ip }}{{ end }}
+      meter: true
+      {{end}}
+  eebusnometer:
+    params:
+      - name: ski
+      - name: ip
+        required: false
+    render: |
+      {{define "eebus-no-meter"}}
+      type: eebus
+      ski: {{ .ski }}
+      {{ if ne .ip "" }}ip: {{ .ip }}{{ end }}
       {{end}}
 
 modbus:

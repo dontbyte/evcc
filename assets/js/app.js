@@ -4,11 +4,10 @@ import smoothscroll from "smoothscroll-polyfill";
 import "../css/app.css";
 import { createApp, h } from "vue";
 import { createMetaManager, plugin as metaPlugin } from "vue-meta";
-import api from "./api";
 import App from "./views/App.vue";
 import VueNumber from "vue-number-animation";
-import router from "./router";
-import i18n from "./i18n";
+import setupRouter from "./router";
+import setupI18n from "./i18n";
 import featureflags from "./featureflags";
 import { watchThemeChanges } from "./theme";
 
@@ -65,16 +64,13 @@ const app = createApp({
   },
 });
 
+const i18n = setupI18n();
 app.use(i18n);
-app.use(router);
+app.use(setupRouter(i18n));
 app.use(createMetaManager());
 app.use(metaPlugin);
 app.use(featureflags);
 app.use(VueNumber);
 window.app = app.mount("#app");
-
-window.setInterval(function () {
-  api.get("health").then(window.app.setOnline).catch(window.app.setOffline);
-}, 5000);
 
 watchThemeChanges();
